@@ -155,7 +155,4 @@ With this configuration in place, global commands may be placed as described in 
 Xdebug
 ------------
 
-Drush disables Xdebug by default. This improves performance substantially, because developers are often debugging something other than Drush and they still need to clear caches, import config, etc. There are two equivalent ways to override Drush's disabling of Xdebug:
-
-- Pass the `--xdebug` global option.
-- Set an environment variable: `DRUSH_ALLOW_XDEBUG=1 drush [command]`
+See the [usage documentation](usage.md) for information on using Drush with XDebug.
