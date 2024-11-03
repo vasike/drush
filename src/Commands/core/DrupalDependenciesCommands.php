@@ -64,6 +64,7 @@ final class DrupalDependenciesCommands extends DrushCommands
         name: 'only-installed',
         description: 'Only check for installed modules'
     )]
+    #[CLI\Bootstrap(level: DrupalBootLevels::FULL)]
     #[CLI\Usage(
         name: 'drush why:module node --dependent-type=module',
         description: 'Show all installed modules depending on node module'
@@ -80,7 +81,7 @@ final class DrupalDependenciesCommands extends DrushCommands
         name: 'drush why:module node --dependent-type=config --format=json',
         description: 'Return config entity dependents as JSON'
     )]
-    #[CLI\Bootstrap(level: DrupalBootLevels::FULL)]
+    #[CLI\Topics(topics: [DocsCommands::DRUPAL_DEPENDENCIES])]
     public function dependentsOfModule(string $module, array $options = [
         'dependent-type' => InputOption::VALUE_REQUIRED,
         'only-installed' => true,
@@ -160,6 +161,7 @@ final class DrupalDependenciesCommands extends DrushCommands
     #[CLI\Command(name: self::WHY_CONFIG, aliases: ['wc'])]
     #[CLI\Help(description: 'List all config entities depending on a given config entity')]
     #[CLI\Argument(name: 'config', description: 'The config entity to check dependents for')]
+    #[CLI\Bootstrap(level: DrupalBootLevels::FULL)]
     #[CLI\Usage(
         name: 'drush why:config node.type.article',
         description: 'Show all config entities modules depending on node.type.article'
@@ -168,7 +170,7 @@ final class DrupalDependenciesCommands extends DrushCommands
         name: 'drush why:config node.type.article --format=yaml',
         description: 'Return config entity dependents as YAML'
     )]
-    #[CLI\Bootstrap(level: DrupalBootLevels::FULL)]
+    #[CLI\Topics(topics: [DocsCommands::DRUPAL_DEPENDENCIES])]
     public function dependentsOfConfig(string $config, array $options = [
         'format' => '',
     ]): string|UnstructuredData|null
