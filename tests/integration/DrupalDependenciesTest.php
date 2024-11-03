@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Unish;
 
+use Drupal\Component\Utility\DeprecationHelper;
+
 /**
  * @coversDefaultClass \Drush\Commands\core\DrupalDependenciesCommands
  */
@@ -28,22 +30,53 @@ class DrupalDependenciesTest extends UnishIntegrationTestCase
             'dependent-type' => 'module',
             'no-only-installed' => null,
         ]);
-        $expected = <<<EXPECTED
-            node
-            ├─dependent1
-            │ └─dependent2
-            │   ├─dependent3
-            │   └─dependent4
-            ├─dependent2
-            │ ├─dependent3
-            │ └─dependent4
-            ├─history
-            │ └─dependent1
-            │   └─dependent2 (circular)
-            └─taxonomy
-              └─dependent1
-                └─dependent2 (circular)
-            EXPECTED;
+
+        // In Drupal 10, book, forum, statistics and tracker modules were part
+        // of Drupal core. Ensure a backwards compatible expectation.
+        // @todo Remove the BC layer when Drupal 10 support is dropped.
+        $expected = DeprecationHelper::backwardsCompatibleCall(
+            \Drupal::VERSION,
+            '11.0.0',
+            fn() => <<<EXPECTED
+                node
+                ├─dependent1
+                │ └─dependent2
+                │   ├─dependent3
+                │   └─dependent4
+                ├─dependent2
+                │ ├─dependent3
+                │ └─dependent4
+                ├─history
+                │ └─dependent1
+                │   └─dependent2 (circular)
+                └─taxonomy
+                  └─dependent1
+                    └─dependent2 (circular)
+                EXPECTED,
+            // @deprecated
+            fn() => <<<EXPECTED
+                node
+                ├─book
+                ├─dependent1
+                │ └─dependent2
+                │   ├─dependent3
+                │   └─dependent4
+                ├─dependent2
+                │ ├─dependent3
+                │ └─dependent4
+                ├─forum
+                ├─history
+                │ ├─dependent1
+                │ │ └─dependent2 (circular)
+                │ └─forum
+                ├─statistics
+                ├─taxonomy
+                │ ├─dependent1
+                │ │ └─dependent2 (circular)
+                │ └─forum
+                └─tracker
+                EXPECTED,
+        );
         $this->assertSame($expected, $this->getOutput());
 
         // Install node module.
