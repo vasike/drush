@@ -280,10 +280,12 @@ final class DrupalDependenciesCommands extends DrushCommands
     {
         $entityTypeManager = \Drupal::entityTypeManager();
         $configTypeIds = array_keys(
-            array_filter($entityTypeManager->getDefinitions(), function (EntityTypeInterface $entityType): bool {
-                return $entityType->entityClassImplements(ConfigEntityInterface::class);
-            })
+            array_filter(
+                $entityTypeManager->getDefinitions(),
+                fn(EntityTypeInterface $entityType): bool => $entityType->entityClassImplements(ConfigEntityInterface::class),
+            )
         );
+
         foreach ($configTypeIds as $configTypeId) {
             /** @var \Drupal\Core\Config\Entity\ConfigEntityInterface $config */
             foreach ($entityTypeManager->getStorage($configTypeId)->loadMultiple() as $config) {
