@@ -27,14 +27,32 @@ final class DrupalDependenciesCommands extends DrushCommands
 {
     public const WHY_MODULE = 'why:module';
     public const WHY_CONFIG = 'why:config';
-
     private const CIRCULAR_REFERENCE = '***circular***';
+
+    /**
+     * List of dependents grouped by dependency.
+     */
     private array $dependents = [];
+
+    /**
+     * Nested array with computed dependency tree.
+     */
     private array $tree = [];
+
+    /**
+     * Visited dependency > dependent paths. Used to detect circular references.
+     */
     private array $relation = [];
+
+    /**
+     * Computed dependent -> dependencies relations.
+     */
     private array $dependencies = [
+      // List of module dependencies grouped by module dependent.
       'module-module' => [],
+      // List of config module dependencies grouped by config dependent.
       'config-module' => [],
+      // List of config dependencies grouped by config dependent.
       'config-config' => [],
     ];
 
