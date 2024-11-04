@@ -22,12 +22,12 @@ class DrupalDependenciesTest extends UnishIntegrationTestCase
         $this->assertStringContainsString('depending on a given module', $this->getOutput());
 
         // Trying to check an uninstalled module.
-        $this->drush('why:module', ['node'], ['dependent-type' => 'module'], UnishTestCase::EXIT_ERROR);
+        $this->drush('why:module', ['node'], ['type' => 'module'], UnishTestCase::EXIT_ERROR);
         $this->assertStringContainsString('Invalid node module', $this->getErrorOutput());
 
         // Check also uninstalled modules.
         $this->drush('wm', ['node'], [
-            'dependent-type' => 'module',
+            'type' => 'module',
             'no-only-installed' => null,
         ]);
 
@@ -83,11 +83,11 @@ class DrupalDependenciesTest extends UnishIntegrationTestCase
         $this->drush('pm:install', ['node']);
 
         // No installed dependencies.
-        $this->drush('why:module', ['node'], ['dependent-type' => 'module']);
+        $this->drush('why:module', ['node'], ['type' => 'module']);
         $this->assertSame('[notice] No other module depends on node', $this->getErrorOutput());
 
         $this->drush('pm:install', ['taxonomy']);
-        $this->drush('wm', ['node'], ['dependent-type' => 'module']);
+        $this->drush('wm', ['node'], ['type' => 'module']);
         $expected = <<<EXPECTED
             node
             └─taxonomy
@@ -95,7 +95,7 @@ class DrupalDependenciesTest extends UnishIntegrationTestCase
         $this->assertSame($expected, $this->getOutput());
 
         $this->drush('pm:install', ['dependent3']);
-        $this->drush('wm', ['node'], ['dependent-type' => 'module']);
+        $this->drush('wm', ['node'], ['type' => 'module']);
         $expected = <<<EXPECTED
             node
             ├─dependent1
@@ -114,7 +114,7 @@ class DrupalDependenciesTest extends UnishIntegrationTestCase
 
         // Test result formatted as JSON.
         $this->drush('wm', ['node'], [
-            'dependent-type' => 'module',
+            'type' => 'module',
             'format' => 'json',
         ]);
         $expected = [
@@ -148,20 +148,20 @@ class DrupalDependenciesTest extends UnishIntegrationTestCase
     public function testOptionsMismatch(): void
     {
         $this->drush('why:module', ['node'], [], UnishTestCase::EXIT_ERROR);
-        $this->assertStringContainsString("The --dependent-type option is mandatory", $this->getErrorOutput());
+        $this->assertStringContainsString("The --type option is mandatory", $this->getErrorOutput());
 
-        $this->drush('why:module', ['node'], ['dependent-type' => 'wrong'], UnishTestCase::EXIT_ERROR);
+        $this->drush('why:module', ['node'], ['type' => 'wrong'], UnishTestCase::EXIT_ERROR);
         $this->assertStringContainsString(
-            "The --dependent-type option can take only 'module' or 'config' as value",
+            "The --type option can take only 'module' or 'config' as value",
             $this->getErrorOutput()
         );
 
         $this->drush('why:module', ['node'], [
-            'dependent-type' => 'config',
+            'type' => 'config',
             'no-only-installed' => null,
         ], UnishTestCase::EXIT_ERROR);
         $this->assertStringContainsString(
-            "Cannot use --dependent-type=config together with --no-only-installed",
+            "Cannot use --type=config together with --no-only-installed",
             $this->getErrorOutput()
         );
     }
@@ -172,14 +172,14 @@ class DrupalDependenciesTest extends UnishIntegrationTestCase
     public function testConfigDependentOfModule(): void
     {
         // Trying to check an uninstalled module.
-        $this->drush('why:module', ['node'], ['dependent-type' => 'config'], UnishTestCase::EXIT_ERROR);
+        $this->drush('why:module', ['node'], ['type' => 'config'], UnishTestCase::EXIT_ERROR);
         $this->assertStringContainsString('Invalid node module', $this->getErrorOutput());
 
         // Install node module.
         $this->drush('pm:install', ['node']);
 
         // No installed dependencies.
-        $this->drush('why:module', ['node'], ['dependent-type' => 'config']);
+        $this->drush('why:module', ['node'], ['type' => 'config']);
         $expected = <<<EXPECTED
             node
             ├─core.entity_view_mode.node.full
@@ -200,7 +200,7 @@ class DrupalDependenciesTest extends UnishIntegrationTestCase
         $this->assertSame($expected, $this->getOutput());
 
         $this->drush('pm:install', ['dependent3']);
-        $this->drush('wm', ['node'], ['dependent-type' => 'config']);
+        $this->drush('wm', ['node'], ['type' => 'config']);
         $expected = <<<EXPECTED
             node
             ├─core.entity_view_mode.node.full

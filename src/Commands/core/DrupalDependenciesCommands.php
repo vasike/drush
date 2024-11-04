@@ -56,7 +56,7 @@ final class DrupalDependenciesCommands extends DrushCommands
     #[CLI\Help(description: 'List all objects (modules, configurations) depending on a given module')]
     #[CLI\Argument(name: 'module', description: 'The module to check dependents for')]
     #[CLI\Option(
-        name: 'dependent-type',
+        name: 'type',
         description: 'Type of dependents: module, config',
         suggestedValues: ['module', 'config']
     )]
@@ -66,29 +66,29 @@ final class DrupalDependenciesCommands extends DrushCommands
     )]
     #[CLI\Bootstrap(level: DrupalBootLevels::FULL)]
     #[CLI\Usage(
-        name: 'drush why:module node --dependent-type=module',
+        name: 'drush why:module node --type=module',
         description: 'Show all installed modules depending on node module'
     )]
     #[CLI\Usage(
-        name: 'drush why:module node --dependent-type=module --no-only-installed',
+        name: 'drush why:module node --type=module --no-only-installed',
         description: 'Show all modules, including uninstalled, depending on node module'
     )]
     #[CLI\Usage(
-        name: 'drush why:module node --dependent-type=config',
+        name: 'drush why:module node --type=config',
         description: 'Show all configuration entities depending on node module'
     )]
     #[CLI\Usage(
-        name: 'drush why:module node --dependent-type=config --format=json',
+        name: 'drush why:module node --type=config --format=json',
         description: 'Return config entity dependents as JSON'
     )]
     #[CLI\Topics(topics: [DocsCommands::DRUPAL_DEPENDENCIES])]
     public function dependentsOfModule(string $module, array $options = [
-        'dependent-type' => InputOption::VALUE_REQUIRED,
+        'type' => InputOption::VALUE_REQUIRED,
         'only-installed' => true,
         'format' => '',
     ]): string|UnstructuredData|null
     {
-        if ($options['dependent-type'] === 'module') {
+        if ($options['type'] === 'module') {
             $this->buildDependents($this->dependencies['module-module']);
         } else {
             $this->scanConfigs();
@@ -100,7 +100,7 @@ final class DrupalDependenciesCommands extends DrushCommands
         if (!isset($this->dependents[$module])) {
             $this->logger()->notice(dt('No @type depends on @module', [
                 '@module' => $module,
-                '@type' => $options['dependent-type'] === 'module' ? dt('other module') : dt('config entity'),
+                '@type' => $options['type'] === 'module' ? dt('other module') : dt('config entity'),
             ]));
             return null;
         }
@@ -117,19 +117,19 @@ final class DrupalDependenciesCommands extends DrushCommands
     #[CLI\Hook(type: HookManager::ARGUMENT_VALIDATOR, target: 'why:module')]
     public function validateDependentsOfModule(CommandData $commandData): void
     {
-        $type = $commandData->input()->getOption('dependent-type');
+        $type = $commandData->input()->getOption('type');
         if (empty($type)) {
-            throw new \InvalidArgumentException("The --dependent-type option is mandatory");
+            throw new \InvalidArgumentException("The --type option is mandatory");
         }
         if (!in_array($type, ['module', 'config'], true)) {
             throw new \InvalidArgumentException(
-                "The --dependent-type option can take only 'module' or 'config' as value"
+                "The --type option can take only 'module' or 'config' as value"
             );
         }
 
         $notOnlyInstalled = $commandData->input()->getOption('no-only-installed');
         if ($notOnlyInstalled && $type === 'config') {
-            throw new \InvalidArgumentException("Cannot use --dependent-type=config together with --no-only-installed");
+            throw new \InvalidArgumentException("Cannot use --type=config together with --no-only-installed");
         }
 
         $module = $commandData->input()->getArgument('module');
