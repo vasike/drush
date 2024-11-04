@@ -226,8 +226,7 @@ final class DrupalDependenciesCommands extends DrushCommands
     }
 
     /**
-     * @param string $dependency
-     * @param array $path
+     * Builds the nested dependency tree.
      */
     protected function buildTree(string $dependency, array $path = []): void
     {
@@ -255,8 +254,7 @@ final class DrupalDependenciesCommands extends DrushCommands
     }
 
     /**
-     * @param array $dependenciesPerDependent
-     * @return $this
+     * Build the reverse the relation: dependent -> dependencies.
      */
     protected function buildDependents(array $dependenciesPerDependent): self
     {
@@ -276,7 +274,7 @@ final class DrupalDependenciesCommands extends DrushCommands
     }
 
     /**
-     * @param bool $scanModuleDependencies
+     * Scans all config entities and store their module and config dependencies.
      */
     protected function scanConfigs(bool $scanModuleDependencies = true): void
     {
@@ -301,6 +299,9 @@ final class DrupalDependenciesCommands extends DrushCommands
         }
     }
 
+    /**
+     * Draws a visual representation of the dependency tree.
+     */
     private function drawTree(string $dependency): string
     {
         $recursiveArrayIterator = new \RecursiveArrayIterator(current($this->tree));
