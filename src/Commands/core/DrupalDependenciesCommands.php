@@ -17,6 +17,7 @@ use Drupal\Core\Extension\ModuleExtensionList;
 use Drush\Attributes as CLI;
 use Drush\Boot\DrupalBootLevels;
 use Drush\Commands\DrushCommands;
+use RecursiveIteratorIterator;
 use Symfony\Component\Console\Input\InputOption;
 
 /**
@@ -287,7 +288,7 @@ final class DrupalDependenciesCommands extends DrushCommands
         $recursiveArrayIterator = new \RecursiveArrayIterator(current($this->tree));
         $recursiveTreeIterator = new \RecursiveTreeIterator(
             $recursiveArrayIterator,
-            \RecursiveTreeIterator::SELF_FIRST,
+            RecursiveIteratorIterator::SELF_FIRST,
         );
         $recursiveTreeIterator->setPrefixPart(\RecursiveTreeIterator::PREFIX_END_HAS_NEXT, '├─');
         $recursiveTreeIterator->setPrefixPart(\RecursiveTreeIterator::PREFIX_END_LAST, '└─');
